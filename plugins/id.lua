@@ -3,7 +3,7 @@
 Print user identification/informations by replying their post or by providing
 their username or print_name.
 
-id <text> is the least reliable because it will scan trough all of members
+!id <text> is the least reliable because it will scan trough all of members
 and print all member with <text> in their print_name.
 
 chat_info can be displayed on group, send it into PM, or save as file then send
@@ -32,7 +32,7 @@ do
       end
     end
     if next(founds) == nil then -- Empty table
-      send_msg(extra.receiver, (extra.name or extra.user)..' not found on this chat.', ok_cb, false)
+      send_large_msg(extra.receiver, (extra.name or extra.user)..' not found on this chat.')
     else
       local text = ''
       for k,user in pairs(founds) do
@@ -42,7 +42,7 @@ do
                ..'User name: @'..(user.username or '')..'\n'
                ..'ID: '..(user.id  or '')..'\n\n'
       end
-      send_msg(extra.receiver, text, ok_cb, false)
+      send_large_msg(extra.receiver, text)
     end
   end
 
@@ -52,7 +52,7 @@ do
                  ..'Last name: '..(result.from.last_name or '')..'\n'
                  ..'User name: @'..(result.from.username or '')..'\n'
                  ..'ID: '..result.from.id
-    send_msg(extra.receiver, text, ok_cb,  true)
+    send_large_msg(extra.receiver, text)
   end
 
   local function returnids(extra, success, result)
@@ -126,23 +126,23 @@ do
     description = 'Know your id or the id of a chat members.',
     usage = {
       user = {
-        'id: Return your ID and the chat id if you are in one.'
+        '!id: Return your ID and the chat id if you are in one.'
       },
       moderator = {
-        'id : Return ID of replied user if used by reply.',
-        'id chat : Return the IDs of the current chat members.',
-        'id chat txt : Return the IDs of the current chat members and send it as text file.',
-        'id chat pm : Return the IDs of the current chat members and send it to PM.',
-        'id chat pmtxt : Return the IDs of the current chat members, save it as text file and then send it to PM.',
-        'id <id> : Return the IDs of the <id>.',
-        'id @<user_name> : Return the member @<user_name> ID from the current chat.',
-        'id <text> : Search for users with <text> on first_name, last_name, or print_name on current chat.'
+        '!id : Return ID of replied user if used by reply.',
+        '!id chat : Return the IDs of the current chat members.',
+        '!id chat txt : Return the IDs of the current chat members and send it as text file.',
+        '!id chat pm : Return the IDs of the current chat members and send it to PM.',
+        '!id chat pmtxt : Return the IDs of the current chat members, save it as text file and then send it to PM.',
+        '!id <id> : Return the IDs of the <id>.',
+        '!id @<user_name> : Return the member @<user_name> ID from the current chat.',
+        '!id <text> : Search for users with <text> on first_name, last_name, or print_name on current chat.'
       },
     },
     patterns = {
-      "^id$",
-      "^id (chat) (.*)$",
-      "^id (.*)$"
+      "^!id$",
+      "^!id (chat) (.*)$",
+      "^!id (.*)$"
     },
     run = run
   }
