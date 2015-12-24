@@ -14,33 +14,33 @@ do
     end
   end
 
-  local function ban_user(user_id, chat_id)
+  local function sik_user(user_id, chat_id)
     -- Save to redis
-    redis:set('banned:'..chat_id..':'..user_id, true)
+    redis:set('sikned:'..chat_id..':'..user_id, true)
     -- Kick from chat
     kick_user(user_id, chat_id)
   end
 
-  local function superban_user(user_id, chat_id)
-    redis:set('superbanned:'..user_id, true)
+  local function siktir_user(user_id, chat_id)
+    redis:set('siktirned:'..user_id, true)
     kick_user(user_id, chat_id)
   end
 
-  local function is_super_banned(user_id)
-    return redis:get('superbanned:'..user_id) or false
+  local function is_super_sikned(user_id)
+    return redis:get('siktirned:'..user_id) or false
   end
 
-  local function unban_user(user_id, chat_id)
-    redis:del('banned:'..chat_id..':'..user_id)
+  local function unsik_user(user_id, chat_id)
+    redis:del('sikned:'..chat_id..':'..user_id)
   end
 
-  local function superunban_user(user_id, chat_id)
-    redis:del('superbanned:'..user_id)
-    return 'User '..user_id..' unbanned'
+  local function unsiktir_user(user_id, chat_id)
+    redis:del('siktirned:'..user_id)
+    return 'User '..user_id..' unsikned'
   end
 
-  local function is_banned(user_id, chat_id)
-    return redis:get('banned:'..chat_id..':'..user_id) or false
+  local function is_sikned(user_id, chat_id)
+    return redis:get('sikned:'..chat_id..':'..user_id) or false
   end
 
   local function action_by_id(extra, success, result)
@@ -53,30 +53,30 @@ do
         if matches[2] == tostring(v.id) then
           group_member = true
           local full_name = (v.first_name or '')..' '..(v.last_name or '')
-          if matches[1] == 'ban' then
-            ban_user(matches[2], chat_id)
-            send_msg(receiver, full_name..' ['..matches[2]..'] banned', ok_cb,  true)
-          elseif matches[1] == 'superban' then
-            superban_user(matches[2], chat_id)
-            send_msg(receiver, full_name..' ['..matches[2]..'] globally banned!', ok_cb, true)
+          if matches[1] == 'sik' then
+            sik_user(matches[2], chat_id)
+            send_msg(receiver, full_name..' ['..matches[2]..'] siked', ok_cb,  true)
+          elseif matches[1] == 'siktir' then
+            siktir_user(matches[2], chat_id)
+            send_msg(receiver, full_name..' ['..matches[2]..'] globally siked!', ok_cb, true)
           elseif matches[1] == 'kick' then
             kick_user(matches[2], chat_id)
           end
         end
       end
-      if matches[1] == 'unban' then
-        if is_banned(matches[2], chat_id) then
-          unban_user(matches[2], chat_id)
-          send_msg(receiver, 'User with ID ['..matches[2]..'] is unbanned.')
+      if matches[1] == 'unsik' then
+        if is_sikned(matches[2], chat_id) then
+          unsik_user(matches[2], chat_id)
+          send_msg(receiver, 'User with ID ['..matches[2]..'] is unsiked.')
         else
-          send_msg(receiver, 'No user with ID '..matches[2]..' in (super)ban list.')
+          send_msg(receiver, 'No user with ID '..matches[2]..' in (super)sik list.')
         end
-      elseif matches[1] == 'superunban' then
-        if is_super_banned(matches[2]) then
-          superunban_user(matches[2], chat_id)
-          send_msg(receiver, 'User with ID ['..matches[2]..'] is globally unbanned.')
+      elseif matches[1] == 'unsiktir' then
+        if is_super_sikned(matches[2]) then
+          unsiktir_user(matches[2], chat_id)
+          send_msg(receiver, 'User with ID ['..matches[2]..'] is globally unsiked.')
         else
-          send_msg(receiver, 'No user with ID '..matches[2]..' in (super)ban list.')
+          send_msg(receiver, 'No user with ID '..matches[2]..' in (super)sik list.')
         end
       end
       if not group_member then
@@ -92,18 +92,18 @@ do
     if is_chat_msg(result) and not is_sudo(result) then
       if extra.match == 'kick' then
         chat_del_user('chat#id'..chat_id, 'user#id'..user_id, ok_cb, false)
-      elseif extra.match == 'ban' then
-        ban_user(user_id, chat_id)
-        send_msg('chat#id'..chat_id, 'User '..user_id..' banned', ok_cb, true)
-      elseif extra.match == 'superban' then
-        superban_user(user_id, chat_id)
-        send_msg('chat#id'..chat_id, full_name..' ['..user_id..'] globally banned!')
-      elseif extra.match == 'unban' then
-        unban_user(user_id, chat_id)
-        send_msg('chat#id'..chat_id, 'User '..user_id..' unbanned', ok_cb, true)
-      elseif extra.match == 'superunban' then
-        superunban_user(user_id, chat_id)
-        send_msg('chat#id'..chat_id, full_name..' ['..user_id..'] globally unbanned!')
+      elseif extra.match == 'sik' then
+        sik_user(user_id, chat_id)
+        send_msg('chat#id'..chat_id, 'User '..user_id..' siked', ok_cb, true)
+      elseif extra.match == 'siktir' then
+        siktir_user(user_id, chat_id)
+        send_msg('chat#id'..chat_id, full_name..' ['..user_id..'] globally siked!')
+      elseif extra.match == 'unsik' then
+        unsik_user(user_id, chat_id)
+        send_msg('chat#id'..chat_id, 'User '..user_id..' unsiked', ok_cb, true)
+      elseif extra.match == 'unsiktir' then
+        unsiktir_user(user_id, chat_id)
+        send_msg('chat#id'..chat_id, full_name..' ['..user_id..'] globally unsiked!')
       elseif extra.match == 'whitelist' then
         redis:set('whitelist:user#id'..user_id, true)
         send_msg('chat#id'..chat_id, full_name..' ['..user_id..'] whitelisted', ok_cb, true)
@@ -132,18 +132,18 @@ do
         if not is_sudoers then
           if extra.match == 'kick' then
             chat_del_user('chat#id'..chat_id, 'user#id'..result.id, ok_cb, false)
-          elseif extra.match == 'ban' then
-            ban_user(user_id, chat_id)
-            send_msg('chat#id'..chat_id, 'User @'..username..' banned', ok_cb,  true)
-          elseif extra.match == 'superban' then
-            superban_user(user_id, chat_id)
-            send_msg('chat#id'..chat_id, 'User @'..username..' ['..user_id..'] globally banned!', ok_cb,  true)
-          elseif extra.match == 'unban' then
-            unban_user(user_id, chat_id)
-            send_msg('chat#id'..chat_id, 'User @'..username..' unbanned', ok_cb,  true)
-          elseif extra.match == 'superunban' then
-            superunban_user(user_id, chat_id)
-            send_msg('chat#id'..chat_id, 'User @'..username..' ['..user_id..'] globally unbanned!', ok_cb,  true)
+          elseif extra.match == 'sik' then
+            sik_user(user_id, chat_id)
+            send_msg('chat#id'..chat_id, 'User @'..username..' siked', ok_cb,  true)
+          elseif extra.match == 'siktir' then
+            siktir_user(user_id, chat_id)
+            send_msg('chat#id'..chat_id, 'User @'..username..' ['..user_id..'] globally siked!', ok_cb,  true)
+          elseif extra.match == 'unsik' then
+            unsik_user(user_id, chat_id)
+            send_msg('chat#id'..chat_id, 'User @'..username..' unsiked', ok_cb,  true)
+          elseif extra.match == 'unsiktir' then
+            unsiktir_user(user_id, chat_id)
+            send_msg('chat#id'..chat_id, 'User @'..username..' ['..user_id..'] globally unsiked!', ok_cb,  true)
           end
         end
       else
@@ -161,9 +161,9 @@ do
       if anti_spam_stat == 'kick' then
         kick_user(user_id, chat_id)
         send_msg('chat#id'..chat_id, 'User '..user_id..' is '..splooder, ok_cb, true)
-      elseif anti_spam_stat == 'ban' then
-        ban_user(user_id, chat_id)
-        send_msg('chat#id'..chat_id, 'User '..user_id..' is '..splooder..'. Banned', ok_cb, true)
+      elseif anti_spam_stat == 'sik' then
+        sik_user(user_id, chat_id)
+        send_msg('chat#id'..chat_id, 'User '..user_id..' is '..splooder..'. siked', ok_cb, true)
       end
       -- hackish way to avoid mulptiple kicking
       redis:setex('kicked:'..chat_id..':'..user_id, 2, 'true')
@@ -207,7 +207,7 @@ do
     -- SERVICE MESSAGE
     if msg.action and msg.action.type then
       local action = msg.action.type
-      -- Check if banned user joins chat
+      -- Check if sikned user joins chat
       if action == 'chat_add_user' or action == 'chat_add_user_link' then        
         if msg.action.link_issuer then
           user_id = msg.from.id
@@ -215,8 +215,8 @@ do
 	        user_id = msg.action.user.id
         end
         print('>>> banhammer : Checking invited user '..user_id)
-        if is_super_banned(user_id) or is_banned(user_id, chat_id) then
-          print('>>> banhammer : '..user_id..' is (super)banned from '..chat_id)
+        if is_super_siked(user_id) or is_sikned(user_id, chat_id) then
+          print('>>> banhammer : '..user_id..' is (super)siked from '..chat_id)
           kick_user(user_id, chat_id)
         end
       end
@@ -224,15 +224,15 @@ do
       return msg
     end
 
-    -- BANNED USER TALKING
+    -- sikNED USER TALKING
     if is_chat_msg(msg) then
-      if is_super_banned(user_id) then
-        print('>>> banhammer : SuperBanned user talking!')
-        superban_user(user_id, chat_id)
+      if is_super_sikned(user_id) then
+        print('>>> banhammer : siktired user talking!')
+        siktir_user(user_id, chat_id)
         msg.text = ''
-      elseif is_banned(user_id, chat_id) then
-        print('>>> banhammer : Banned user talking!')
-        ban_user(user_id, chat_id)
+      elseif is_sikned(user_id, chat_id) then
+        print('>>> banhammer : siked user talking!')
+        sik_user(user_id, chat_id)
         msg.text = ''
       end
     end
@@ -292,7 +292,7 @@ do
           elseif string.match(matches[2], '^@.+$') then
             msgr = res_user(string.gsub(matches[2], '@', ''), resolve_username, {msg=msg, match=matches[1]})
           end
-        elseif matches[1] == 'ban' then
+        elseif matches[1] == 'sik' then
           if msg.reply_id then
             msgr = get_message(msg.reply_id, action_by_reply, {msg=msg, match=matches[1]})
           elseif string.match(matches[2], '^%d+$') then
@@ -300,13 +300,13 @@ do
           elseif string.match(matches[2], '^@.+$') then
             msgr = res_user(string.gsub(matches[2], '@', ''), resolve_username, {msg=msg, match=matches[1]})
           end
-        elseif matches[1] == 'banlist' then
-          local text = 'Ban list for '..msg.to.title..' ['..msg.to.id..']:\n\n'
-          for k,v in pairs(redis:keys('banned:'..msg.to.id..':*')) do
+        elseif matches[1] == 'siklist' then
+          local text = 'sik list for '..msg.to.title..' ['..msg.to.id..']:\n\n'
+          for k,v in pairs(redis:keys('sikned:'..msg.to.id..':*')) do
             text = text..k..'. '..v..'\n'
           end
-          return string.gsub(text, 'banned:'..msg.to.id..':', '')
-        elseif matches[1] == 'unban' then
+          return string.gsub(text, 'sikned:'..msg.to.id..':', '')
+        elseif matches[1] == 'unsik' then
           if msg.reply_id then
             msgr = get_message(msg.reply_id, action_by_reply, {msg=msg, match=matches[1]})
           elseif string.match(matches[2], '^%d+$') then
@@ -325,12 +325,12 @@ do
             end
               return 'Anti flood and spam protection already enabled.\nOffender will be kicked.'
             end
-          if matches[2] == 'ban' then
-            if settings.anti_flood ~= 'ban' then
-              settings.anti_flood = 'ban'
+          if matches[2] == 'sik' then
+            if settings.anti_flood ~= 'sik' then
+              settings.anti_flood = 'sik'
               save_data(_config.moderation.data, data)
             end
-              return 'Anti flood and spam protection already enabled.\nOffender will be banned.'
+              return 'Anti flood and spam protection already enabled.\nOffender will be sikned.'
             end
           if matches[2] == 'disable' then
             if settings.anti_flood == 'no' then
@@ -370,7 +370,7 @@ do
         end
       end
       if is_admin(msg) then
-        if matches[1] == 'superban' then
+        if matches[1] == 'siktir' then
           if msg.reply_id then
             msgr = get_message(msg.reply_id, action_by_reply, {msg=msg, match=matches[1]})
           elseif string.match(matches[2], '^%d+$') then
@@ -378,7 +378,7 @@ do
           elseif string.match(matches[2], '^@.+$') then
             msgr = res_user(string.gsub(matches[2], '@', ''), resolve_username, {msg=msg, match=matches[1]})
           end
-        elseif matches[1] == 'superunban' then
+        elseif matches[1] == 'unsiktir' then
           if msg.reply_id then
             msgr = get_message(msg.reply_id, action_by_reply, {msg=msg, match=matches[1]})
           elseif string.match(matches[2], '^%d+$') then
@@ -394,60 +394,60 @@ do
   end
 
   return {
-    description = 'Plugin to manage bans, kicks and white/black lists.',
+    description = 'Plugin to manage siks, kicks and white/black lists.',
     usage = {
       user = {
-        '!kickme : Kick yourself out of this group.'
+        'kickme : Kick yourself out of this group.'
       },
       admin = {
-        '!superban : If type in reply, will ban user globally.',
-        '!superban <user_id>/@<username> : Kick user_id/username from all chat and kicks it if joins again',
-        '!superunban : If type in reply, will unban user globally.',
-        '!superunban <user_id>/@<username> : Unban user_id/username globally.'
+        'siktir : If type in reply, will sik user globally.',
+        'siktir <user_id>/@<username> : Kick user_id/username from all chat and kicks it if joins again',
+        'unsiktir : If type in reply, will unsik user globally.',
+        'unsiktir <user_id>/@<username> : unsik user_id/username globally.'
       },
       moderator = {
-        '!antispam kick : Enable flood and spam protection. Offender will be kicked.',
-        '!antispam ban : Enable flood and spam protection. Offender will be banned.',
-        '!antispam disable : Disable flood and spam protection',
-        '!ban : If type in reply, will ban user from chat group.',
-        '!ban <user_id>/<@username>: Kick user from chat and kicks it if joins chat again',
-        '!banlist : List users banned from chat group.',
-        '!unban : If type in reply, will unban user from chat group.',
-        '!unban <user_id>/<@username>: Unban user',
-        '!kick : If type in reply, will kick user from chat group.',
-        '!kick <user_id>/<@username>: Kick user from chat group',
-        '!whitelist : If type in reply, allow user to use the bot when whitelist mode is enabled',
-        '!whitelist chat: Allow everybody on current chat to use the bot when whitelist mode is enabled',
-        '!whitelist delete chat: Remove chat from whitelist',
-        '!whitelist delete user <user_id>: Remove user from whitelist',
-        '!whitelist <enable>/<disable>: Enable or disable whitelist mode',
-        '!whitelist user <user_id>: Allow user to use the bot when whitelist mode is enabled',
-        '!unwhitelist : If type in reply, remove user from whitelist'
+        'antispam kick : Enable flood and spam protection. Offender will be kicked.',
+        'antispam sik : Enable flood and spam protection. Offender will be sikned.',
+        'antspam disable : Disable flood and spam protection',
+        'sik : If type in reply, will sik user from chat group.',
+        'sik <user_id>/<@username>: Kick user from chat and kicks it if joins chat again',
+        '!siklist : List users sikned from chat group.',
+        'unsik : If type in reply, will unsik user from chat group.',
+        'unsik <user_id>/<@username>: unsik user',
+        'kick : If type in reply, will kick user from chat group.',
+        'kick <user_id>/<@username>: Kick user from chat group',
+        'whitelist : If type in reply, allow user to use the bot when whitelist mode is enabled',
+        'whitelist chat: Allow everybody on current chat to use the bot when whitelist mode is enabled',
+        'whitelist delete chat: Remove chat from whitelist',
+        'whitelist delete user <user_id>: Remove user from whitelist',
+        'whitelist <enable>/<disable>: Enable or disable whitelist mode',
+        'whitelist user <user_id>: Allow user to use the bot when whitelist mode is enabled',
+        'unwhitelist : If type in reply, remove user from whitelist'
       },
     },
     patterns = {
-      '^!(antispam) (.*)$',
-      '^!(ban) (.*)$',
-      '^!(ban)$',
-      '^!(banlist)$',
-      '^!(unban) (.*)$',
-      '^!(unban)$',
-      '^!(kick) (.+)$',
-      '^!(kick)$',
-      '^!(kickme)$',
+      '^(antispam) (.*)$',
+      '^(sik) (.*)$',
+      '^(sik)$',
+      '^(siklist)$',
+      '^(unsik) (.*)$',
+      '^(unsik)$',
+      '^(kick) (.+)$',
+      '^(kick)$',
+      '^(kickme)$',
       '^!!tgservice (.+)$',
-      '^!(whitelist)$',
-      '^!(whitelist) (chat)$',
-      '^!(whitelist) (delete) (chat)$',
-      '^!(whitelist) (delete) (user) (%d+)$',
-      '^!(whitelist) (disable)$',
-      '^!(whitelist) (enable)$',
-      '^!(whitelist) (user) (%d+)$',
-      '^!(unwhitelist)$',
-      '^!(superban)$',
-      '^!(superban) (.*)$',
-      '^!(superunban)$',
-      '^!(superunban) (.*)$'
+      '^(whitelist)$',
+      '^(whitelist) (chat)$',
+      '^(whitelist) (delete) (chat)$',
+      '^(whitelist) (delete) (user) (%d+)$',
+      '^(whitelist) (disable)$',
+      '^(whitelist) (enable)$',
+      '^(whitelist) (user) (%d+)$',
+      '^(unwhitelist)$',
+      '^(siktir)$',
+      '^(siktir) (.*)$',
+      '^(unsiktir)$',
+      '^(unsiktir) (.*)$'
     },
     run = run,
     pre_process = pre_process
