@@ -53,11 +53,11 @@ do
       local data = load_data(_config.moderation.data)
 
       -- create a group
-      if matches[1] == 'mkgroup' and matches[2] and is_mod(msg) then
+      if matches[1] == 'creategroup' and matches[2] and is_mod(msg) then
         create_group_chat (msg.from.print_name, matches[2], ok_cb, false)
 	      return 'Group '..string.gsub(matches[2], '_', ' ')..' has been created.'
       -- add a group to be moderated
-      elseif matches[1] == 'addgroup' and is_admin(msg) then
+      elseif matches[1] == 'modadd' and is_admin(msg) then
         if data[tostring(msg.to.id)] then
           return 'Group is already added.'
         end
@@ -78,7 +78,7 @@ do
         save_data(_config.moderation.data, data)
         return 'Group has been added.'
       -- remove group from moderation
-      elseif matches[1] == 'remgroup' and is_admin(msg) then
+      elseif matches[1] == 'modrem' and is_admin(msg) then
         if not data[tostring(msg.to.id)] then
           return 'Group is not added.'
         end
@@ -360,49 +360,49 @@ do
     description = 'Plugin to manage group chat.',
     usage = {
       admin = {
-        '!mkgroup <group_name> : Make/create a new group.',
-        '!addgroup : Add group to moderation list.',
-        '!remgroup : Remove group from moderation list.'
+        'creategroup <group_name> : Make/create a new group.',
+        'modadd : Add group to moderation list.',
+        'modrem : Remove group from moderation list.'
       },
       moderator = {
-        '!group <lock|unlock> bot : {Dis}allow APIs bots.',
-        '!group <lock|unlock> member : Lock/unlock group member.',
-        '!group <lock|unlock> name : Lock/unlock group name.',
-        '!group <lock|unlock> photo : Lock/unlock group photo.',
-        '!group settings : Show group settings.',
-        '!link <set> : Generate/revoke invite link.',
-        '!setabout <description> : Set group description.',
-        '!setname <new_name> : Set group name.',
-        '!setphoto : Set group photo.',
-        '!setrules <rules> : Set group rules.',
-        '!sticker warn : Sticker restriction, sender will be warned for the first violation.',
-        '!sticker kick : Sticker restriction, sender will be kick.',
-        '!sticker ok : Disable sticker restriction.'
+        'group <lock|unlock> bot : {Dis}allow APIs bots.',
+        'group <lock|unlock> member : Lock/unlock group member.',
+        'group <lock|unlock> name : Lock/unlock group name.',
+        'group <lock|unlock> photo : Lock/unlock group photo.',
+        'group settings : Show group settings.',
+        'link <set> : Generate/revoke invite link.',
+        'setabout <description> : Set group description.',
+        'setname <new_name> : Set group name.',
+        'setphoto : Set group photo.',
+        'setrules <rules> : Set group rules.',
+        'sticker warn : Sticker restriction, sender will be warned for the first violation.',
+        'sticker kick : Sticker restriction, sender will be kick.',
+        'sticker ok : Disable sticker restriction.'
       },
       user = {
-        '!about : Read group description',
-        '!rules : Read group rules',
-        '!link <get> : Print invite link'
+        'about : Read group description',
+        'rules : Read group rules',
+        'link <get> : Print invite link'
       },
     },
     patterns = {
-      '^!(about)$',
-      '^!(addgroup)$',
+      '^(about)$',
+      '^(modadd)$',
       '%[(audio)%]',
       '%[(document)%]',
-      '^!(group) (lock) (.*)$',
-      '^!(group) (settings)$',
-      '^!(group) (unlock) (.*)$',
-      '^!(link) (.*)$',
-      '^!(mkgroup) (.*)$',
+      '^(group) (lock) (.*)$',
+      '^(group) (settings)$',
+      '^(group) (unlock) (.*)$',
+      '^(link) (.*)$',
+      '^(creategroup) (.*)$',
       '%[(photo)%]',
-      '^!(remgroup)$',
-      '^!(rules)$',
-      '^!(setabout) (.*)$',
-      '^!(setname) (.*)$',
-      '^!(setphoto)$',
-      '^!(setrules) (.*)$',
-      '^!(sticker) (.*)$',
+      '^(modrem)$',
+      '^(rules)$',
+      '^(setabout) (.*)$',
+      '^(setname) (.*)$',
+      '^(setphoto)$',
+      '^(setrules) (.*)$',
+      '^(sticker) (.*)$',
       '^!!tgservice (.+)$',
       '%[(video)%]'
     },
