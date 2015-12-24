@@ -1,14 +1,14 @@
 --[[
 Sends a custom message when a user enters or leave a chat.
 
-!welcome group
+welcome group
 The custom message will send to the group. Recommended way.
 
-!welcome pm
+welcome pm
 The custom message will send to private chat newly joins member.
 Not recommended as a privacy concern and the possibility of user reporting the bot.
 
-!welcome disable
+welcome disable
 Disable welcome service. Also, you can just disable greeter plugin.
 --]]
 
@@ -103,14 +103,14 @@ do
     description = 'Sends a custom message when a user enters or leave a chat.',
     usage = {
       moderator = {
-        '!welcome group : Welcome message will shows in group.',
-        '!welcome pm : Welcome message will send to new member via PM.',
-        '!welcome disable : Disable welcome message.'
+        'welcome group : Welcome message will shows in group.',
+        'welcome pm : Welcome message will send to new member via PM.',
+        'welcome disable : Disable welcome message.'
       },
     },
     patterns = {
       '^!!tgservice (.+)$',
-      '^!(welcome) (.*)$'
+      '^(welcome) (.*)$'
     },
     run = run
   }
