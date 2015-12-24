@@ -159,15 +159,15 @@ end
 return {
   description = "Help plugin. Get info from other plugins.",
   usage = {
-    "help: Show list of plugins.",
-    "help all: Show all commands for every plugin.",
-    "help [plugin name]: Commands for that plugin.",
-    "help [number]: Commands for that plugin. Type !help to get the plugin number."
+    "!help: Show list of plugins.",
+    "!help all: Show all commands for every plugin.",
+    "!help [plugin name]: Commands for that plugin.",
+    "!help [number]: Commands for that plugin. Type !help to get the plugin number."
   },
   patterns = {
-    "^help$",
-    "^help all",
-    "^help (.+)"
+    "^!help$",
+    "^!help all",
+    "^!help (.+)"
   },
   run = run
 }
