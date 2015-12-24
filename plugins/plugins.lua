@@ -137,23 +137,23 @@ do
     description = 'Plugin to manage other plugins. Enable, disable or reload.',
     usage = {
       moderator = {
-        '!plugins: list all plugins.',
-        '!plugins enable [plugin] chat: re-enable plugin only this chat.',
-        '!plugins disable [plugin] chat: disable plugin only this chat.'
+        'plugins: list all plugins.',
+        'plugins enable [plugin] chat: re-enable plugin only this chat.',
+        'plugins disable [plugin] chat: disable plugin only this chat.'
       },
       sudo = {
-        '!plugins enable [plugin]: enable plugin.',
-        '!plugins disable [plugin]: disable plugin.',
-        '!plugins reload: reloads all plugins.'
+        'plugins enable [plugin]: enable plugin.',
+        'plugins disable [plugin]: disable plugin.',
+        'plugins reload: reloads all plugins.'
       },
     },
     patterns = {
-      "^!plugins$",
-      "^!plugins? (enable) ([%w_%.%-]+)$",
-      "^!plugins? (disable) ([%w_%.%-]+)$",
-      "^!plugins? (enable) ([%w_%.%-]+) (chat)$",
-      "^!plugins? (disable) ([%w_%.%-]+) (chat)$",
-      "^!plugins? (reload)$"
+      "^plugins$",
+      "^plugins? (enable) ([%w_%.%-]+)$",
+      "^plugins? (disable) ([%w_%.%-]+)$",
+      "^plugins? (enable) ([%w_%.%-]+) (chat)$",
+      "^plugins? (disable) ([%w_%.%-]+) (chat)$",
+      "^plugins? (reload)$"
     },
     run = run,
     moderated = true
