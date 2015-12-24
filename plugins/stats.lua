@@ -168,14 +168,14 @@ end
 return {
   description = "Plugin to update user stats.", 
   usage = {
-    "!stats: Returns a list of Username [telegram_id]: msg_num",
-    "!stats chat <chat_id>: Show stats for chat_id",
-    "!stats bot: Shows bot stats (sudo users)"
+    "stats: Returns a list of Username [telegram_id]: msg_num",
+    "stats chat <chat_id>: Show stats for chat_id",
+    "stats bot: Shows bot stats (sudo users)"
   },
   patterns = {
-    "^!([Ss]tats)$",
-    "^!([Ss]tats) (chat) (%d+)",
-    "^!([Ss]tats) (bot)"
+    "^([Ss]tats)$",
+    "^([Ss]tats) (chat) (%d+)",
+    "^([Ss]tats) (bot)"
     }, 
   run = run,
   pre_process = pre_process
