@@ -18,8 +18,8 @@ do
     return redis:get('banned:'..chat_id..':'..user_id) or false
   end
 
-  local function is_siktir_sik(user_id)
-      return redis:get('siktired:'..user_id) or false
+  local function is_super_ban(user_id)
+      return redis:get('superbanned:'..user_id) or false
   end
 
   local function run(msg, matches)
@@ -93,7 +93,7 @@ do
             send_large_msg(receiver, welcomes..about..rules..'\n', ok_cb, false)
           end
         elseif matches[1] == 'chat_del_user' then
-          return 'از گروه سیک کرد 😂 '..new_member..'!'
+          return 'sik'..new_member..'!'
         end
       end
     end
