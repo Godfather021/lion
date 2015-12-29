@@ -1,33 +1,72 @@
 do
--- https://github.com/kir/kir --
-local function unblock_user_callback(cb_extra, success, result)
-  local receiver = cb_extra.receiver
-  local user = 'user#id'..result.id
-  if success == 0 then
-    return send_large_msg(receiver, "I cant unblock user.")
+
+-- Recursive function
+local function getRandomButts(attempt)
+  attempt = attempt or 0
+  attempt = attempt + 1
+
+  local res,status = http.request("http://api.obutts.ru/noise/1")
+
+  if status ~= 200 then return nil end
+  local data = json:decode(res)[1]
+
+  -- The OpenBoobs API sometimes returns an empty array
+  if not data and attempt <= 3 then
+    print('Cannot get that butts, trying another one...')
+    return getRandomButts(attempt)
   end
-  unblock_user(user, cb_ok, false)
+
+  return 'http://media.obutts.ru/' .. data.preview
 end
+
+local function getRandomBoobs(attempt)
+  attempt = attempt or 0
+  attempt = attempt + 1
+
+  local res,status = http.request("http://api.oboobs.ru/noise/1")
+
+  if status ~= 200 then return nil end
+  local data = json:decode(res)[1]
+
+  -- The OpenBoobs API sometimes returns an empty array
+  if not data and attempt < 10 then 
+    print('Cannot get that boobs, trying another one...')
+    return getRandomBoobs(attempt)
+  end
+
+  return 'http://media.oboobs.ru/' .. data.preview
 end
+
 local function run(msg, matches)
- if msg.to.type == 'chat' then
-    local user = 'chat#id'..msg.to.id
- local user = matches[2]
-  if matches[1] == "user" then
-      user = 'user#id'..user
-      unblock_user(user, callback, false)
-    end
-    if not is_sudo(msg) then
-    return "sudo only!"
+  local url = nil
+  
+  if matches[1] == "!boobs" then
+    url = getRandomBoobs()
   end
-    return "User Has Been unblocked"
+
+  if matches[1] == "!butts" then
+    url = getRandomButts()
+  end
+
+  if url ~= nil then
+    local receiver = get_receiver(msg)
+    send_photo_from_url(receiver, url)
+  else
+    return 'Error getting boobs/butts for you, please try again later.' 
   end
 end
- 
+
 return {
-  patterns = {
-    "^!unblock (user) (%d+)$",
+  description = "Gets a random boobs or butts pic", 
+  usage = {
+    "!boobs: Get a boobs NSFW image. 🔞",
+    "!butts: Get a butts NSFW image. 🔞"
   },
-  run = run,
- -- https://github.com/kir/kir --
+  patterns = {
+    "^!boobs$",
+    "^!butts$"
+  }, 
+  run = run 
 }
+
+end
